@@ -1,34 +1,56 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Full Stack Webdev Template
+This is a starting point for a TypeScript Next.js project including:
+- [TailwindCSS](https://tailwindcss.com) for styling
+- [Prisma](https://www.prisma.io) as ORM for handling DB requests
+- [React Query](https://react-query.tanstack.com) for data-fetching
+- [tRPC](https://trpc.io) for type safety between front- and backend
 
-## Getting Started
 
-First, run the development server:
+## Setup DB with PlanetScale
+*Full documentation: [official docs](https://docs.planetscale.com/tutorials/planetscale-quick-start-guide#getting-started-—-planetscale-cli)*
+### Prerequisites:
+- [Planetscale CLI](https://github.com/planetscale/cli#installation)
+- Node
 
-```bash
-npm run dev
-# or
-yarn dev
+1. Make sure you are authenticated
+```sh
+$ pscale auth login
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Then, create the database
+```sh
+$ pscale database create <DATABASE_NAME> --region <REGION (eu-west)>
+```
+*Initialization of the database will take a while*
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+3. Create a development branch so that you can make changes
+```sh
+$ pscale branch create <DATABASE_NAME> <BRANCH_NAME (dev)>
+```
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+4. Connect to the database using the new branch
+```sh
+$ pscale connect <DATABASE_NAME> <BRANCH_NAME> --port <PORT (3309)>
+````
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+5. Modify the `DATABASE_URL` environment variable in [.env](.env)
 
-## Learn More
+6. Push the [Prisma schema](prisma/schema.prisma) to the database
+```
+$ npx prisma db push
+```
 
-To learn more about Next.js, take a look at the following resources:
+7. Push the schema changes to production
+```
+# Promote `main` to production
+$ pscale branch promote <DATABASE_NAME> main
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Create a deploy request to merge the changes from dev -> main
+$ pscale deploy-request create <DATABASE_NAME> <BRANCH NAME (dev)>
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+# Deploy the deploy request to production (You may first have to find the DR_NUMBER by listing the deploy requests)
+$ pscale deploy-request list <DATABASE_NAME>
+$ pscale deploy-request deploy <DATABASE_NAME> <DR_NUMBER (1)>
+```
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Done, your database is now up to date with your Prisma schema!
