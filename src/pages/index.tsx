@@ -10,7 +10,7 @@ export default function Home () {
       <h2 className="text-2xl">Reports:</h2>
       {data.map((report) => {
         return (
-          <div>
+          <div key={report.id}>
             {report.description}
           </div>
         );
