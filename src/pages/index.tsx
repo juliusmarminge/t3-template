@@ -1,11 +1,20 @@
-import type { NextPage } from 'next'
+import { trpc } from "../utils/trpc";
 
-const Home: NextPage = () => {
+export default function Home () {
+  const { data, isLoading } = trpc.useQuery(["reports.get-all"]);
+
+  if (isLoading || !data) return <div>Loading...</div>;
+
   return (
     <div className="flex flex-col p-8">
-      <p className="text-2xl">Hello</p>
+      <h2 className="text-2xl">Reports:</h2>
+      {data.map((report) => {
+        return (
+          <div>
+            {report.description}
+          </div>
+        );
+      })}
     </div>
   )
-};
-
-export default Home
+}
