@@ -1,4 +1,7 @@
 # Full Stack Webdev Template
+
+## DEPRECATED. USE [create-t3-app](https://www.github.com/nexxeln/create-t3-app) INSTEAD
+
 This is a starting point for a TypeScript Next.js project including:
 - [TailwindCSS](https://tailwindcss.com) for styling
 - [Prisma](https://www.prisma.io) as ORM for handling DB requests
